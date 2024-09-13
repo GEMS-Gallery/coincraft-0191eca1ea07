@@ -10,8 +10,6 @@ async function updateBalance() {
 
 async function updateTransactions() {
     const transactions = await backend.getTransactions();
-    // Update the holdings list with the latest transactions
-    // This is a simplified version and should be expanded based on actual data structure
     const holdingsList = document.querySelector('.holdings-list');
     holdingsList.innerHTML = transactions.map(t => `
         <li><span>${t.description}</span> <span class="value">$${t.amount.toFixed(2)}</span></li>
@@ -68,7 +66,6 @@ function initializeCharts() {
         });
     }
 
-    // Pie charts
     const pieChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -102,14 +99,15 @@ function initializeCharts() {
     });
 }
 
-// Modal functionality
 function initializeModal() {
     const modal = document.getElementById("addAssetModal");
-    const btn = document.querySelector(".add-asset-btn");
+    const btn = document.getElementById("addAssetBtn");
     const span = document.getElementsByClassName("close")[0];
 
     if (btn) {
-        btn.onclick = function() {
+        btn.onclick = function(e) {
+            e.preventDefault();
+            console.log("Add Asset button clicked");
             modal.style.display = "block";
         }
     }
@@ -153,8 +151,8 @@ function initializeModal() {
     }
 }
 
-// Initialize everything when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded");
     initializeCharts();
     initializeModal();
     updateBalance();
