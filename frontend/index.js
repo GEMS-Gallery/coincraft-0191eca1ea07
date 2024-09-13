@@ -30,110 +30,123 @@ async function updateHoldings() {
     });
 }
 
-// Value chart
-new Chart(document.getElementById('valueChart').getContext('2d'), {
-    type: 'line',
-    data: {
-        labels: ['1M', '3M', '6M', '1Y', 'ALL'],
-        datasets: [{
-            data: [450000, 455000, 458000, 460000, 462487.74],
-            borderColor: '#34c759',
-            backgroundColor: 'rgba(52, 199, 89, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            borderWidth: 2
-        }]
-    },
-    options: {
+function initializeCharts() {
+    const valueChartElement = document.getElementById('valueChart');
+    if (valueChartElement && valueChartElement.getContext) {
+        new Chart(valueChartElement.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['1M', '3M', '6M', '1Y', 'ALL'],
+                datasets: [{
+                    data: [450000, 455000, 458000, 460000, 462487.74],
+                    borderColor: '#34c759',
+                    backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: true, grid: { display: false } },
+                    y: { display: false }
+                },
+                elements: {
+                    line: { tension: 0.4 }
+                }
+            }
+        });
+    }
+
+    // Pie charts
+    const pieChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-            x: { display: true, grid: { display: false } },
-            y: { display: false }
+        plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
         },
-        elements: {
-            line: { tension: 0.4 }
+        cutout: '70%'
+    };
+
+    const pieChartColors = ['#34c759', '#5856d6', '#ff9500', '#ff2d55', '#5ac8fa', '#007aff', '#af52de'];
+
+    const chartIds = ['allocationChart', 'classesChart', 'sectorsChart'];
+    const chartData = [
+        [68, 17, 15],
+        [47, 21, 15, 17],
+        [40, 25, 15, 12, 8]
+    ];
+
+    chartIds.forEach((id, index) => {
+        const element = document.getElementById(id);
+        if (element && element.getContext) {
+            new Chart(element.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{ data: chartData[index], backgroundColor: pieChartColors }]
+                },
+                options: pieChartOptions
+            });
         }
-    }
-});
-
-// Pie charts
-const pieChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false }
-    },
-    cutout: '70%'
-};
-
-const pieChartColors = ['#34c759', '#5856d6', '#ff9500', '#ff2d55', '#5ac8fa', '#007aff', '#af52de'];
-
-new Chart(document.getElementById('allocationChart').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-        datasets: [{ data: [68, 17, 15], backgroundColor: pieChartColors }]
-    },
-    options: pieChartOptions
-});
-
-new Chart(document.getElementById('classesChart').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-        datasets: [{ data: [47, 21, 15, 17], backgroundColor: pieChartColors }]
-    },
-    options: pieChartOptions
-});
-
-new Chart(document.getElementById('sectorsChart').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-        datasets: [{ data: [40, 25, 15, 12, 8], backgroundColor: pieChartColors }]
-    },
-    options: pieChartOptions
-});
+    });
+}
 
 // Modal functionality
-const modal = document.getElementById("addAssetModal");
-const btn = document.querySelector(".add-asset-btn");
-const span = document.getElementsByClassName("close")[0];
+function initializeModal() {
+    const modal = document.getElementById("addAssetModal");
+    const btn = document.querySelector(".add-asset-btn");
+    const span = document.getElementsByClassName("close")[0];
 
-btn.onclick = function() {
-    modal.style.display = "block";
-}
-
-span.onclick = function() {
-    modal.style.display = "none";
-}
-
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-
-document.getElementById('addAssetForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('assetName').value;
-    const value = parseFloat(document.getElementById('assetValue').value);
-    if (name && value) {
-        try {
-            await backend.addHolding(name, value);
-            await updateBalance();
-            await updateHoldings();
-            modal.style.display = "none";
-            document.getElementById('addAssetForm').reset();
-        } catch (error) {
-            console.error("Error adding asset:", error);
-            alert("Failed to add asset. Please try again.");
+    if (btn) {
+        btn.onclick = function() {
+            modal.style.display = "block";
         }
     }
-});
 
-// Initial load
-updateBalance();
-updateTransactions();
-updateHoldings();
+    if (span) {
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    const form = document.getElementById('addAssetForm');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('assetName').value;
+            const value = parseFloat(document.getElementById('assetValue').value);
+            if (name && value) {
+                try {
+                    await backend.addHolding(name, value);
+                    await updateBalance();
+                    await updateHoldings();
+                    modal.style.display = "none";
+                    form.reset();
+                } catch (error) {
+                    console.error("Error adding asset:", error);
+                    alert("Failed to add asset. Please try again.");
+                }
+            }
+        });
+    }
+}
+
+// Initialize everything when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializeCharts();
+    initializeModal();
+    updateBalance();
+    updateTransactions();
+    updateHoldings();
+});
