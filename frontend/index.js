@@ -1,36 +1,116 @@
 import { backend } from 'declarations/backend';
 
-let balance = 0;
-let transactions = [];
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif";
+Chart.defaults.font.size = 12;
 
 async function updateBalance() {
-    balance = await backend.getBalance();
-    document.getElementById('balance').textContent = `Current Balance: $${balance.toFixed(2)}`;
+    const balance = await backend.getBalance();
+    document.querySelector('.total-value').textContent = balance.toFixed(3);
 }
 
 async function updateTransactions() {
-    transactions = await backend.getTransactions();
-    const transactionList = document.getElementById('transactionList');
-    transactionList.innerHTML = '';
-    transactions.forEach(transaction => {
-        const li = document.createElement('li');
-        li.textContent = `${transaction.description}: $${transaction.amount.toFixed(2)}`;
-        transactionList.appendChild(li);
-    });
+    const transactions = await backend.getTransactions();
+    // Update the holdings list with the latest transactions
+    // This is a simplified version and should be expanded based on actual data structure
+    const holdingsList = document.querySelector('.holdings-list');
+    holdingsList.innerHTML = transactions.map(t => `
+        <li><span>${t.description}</span> <span class="value">$${t.amount.toFixed(2)}</span></li>
+    `).join('');
 }
 
-document.getElementById('transactionForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const amount = parseFloat(document.getElementById('amount').value);
-    const description = document.getElementById('description').value;
-    
-    await backend.addTransaction(amount, description);
-    
-    document.getElementById('amount').value = '';
-    document.getElementById('description').value = '';
-    
-    await updateBalance();
-    await updateTransactions();
+// Value chart
+new Chart(document.getElementById('valueChart').getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: ['1M', '3M', '6M', '1Y', 'ALL'],
+        datasets: [{
+            data: [450000, 455000, 458000, 460000, 462487.74],
+            borderColor: '#34c759',
+            backgroundColor: 'rgba(52, 199, 89, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { display: true, grid: { display: false } },
+            y: { display: false }
+        },
+        elements: {
+            line: { tension: 0.4 }
+        }
+    }
+});
+
+// Pie charts
+const pieChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+    },
+    cutout: '70%'
+};
+
+const pieChartColors = ['#34c759', '#5856d6', '#ff9500', '#ff2d55', '#5ac8fa', '#007aff', '#af52de'];
+
+new Chart(document.getElementById('allocationChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        datasets: [{ data: [68, 17, 15], backgroundColor: pieChartColors }]
+    },
+    options: pieChartOptions
+});
+
+new Chart(document.getElementById('classesChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        datasets: [{ data: [47, 21, 15, 17], backgroundColor: pieChartColors }]
+    },
+    options: pieChartOptions
+});
+
+new Chart(document.getElementById('sectorsChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        datasets: [{ data: [40, 25, 15, 12, 8], backgroundColor: pieChartColors }]
+    },
+    options: pieChartOptions
+});
+
+// Holdings grid
+const holdings = [
+    { name: 'VTI', value: 150000 },
+    { name: 'VT', value: 100000 },
+    { name: 'AAPL', value: 75000 },
+    { name: 'MSFT', value: 50000 },
+    { name: 'BTC', value: 25000 },
+    { name: 'TSLA', value: 20000 },
+    { name: 'GOOGL', value: 15000 }
+];
+
+const holdingsGrid = document.getElementById('holdingsGrid');
+holdings.forEach(holding => {
+    const tile = document.createElement('div');
+    tile.className = 'holding-tile';
+    tile.innerHTML = `<strong>${holding.name}</strong>$${holding.value.toLocaleString()}`;
+    holdingsGrid.appendChild(tile);
+});
+
+document.querySelector('.add-asset-btn').addEventListener('click', async () => {
+    const amount = parseFloat(prompt("Enter asset value:"));
+    const description = prompt("Enter asset description:");
+    if (amount && description) {
+        await backend.addTransaction(amount, description);
+        await updateBalance();
+        await updateTransactions();
+    }
 });
 
 // Initial load
