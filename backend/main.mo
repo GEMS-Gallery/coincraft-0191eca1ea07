@@ -8,7 +8,6 @@ import Iter "mo:base/Iter";
 import Time "mo:base/Time";
 
 actor {
-  // Define the Transaction type
   type Transaction = {
     id: Nat;
     amount: Float;
@@ -16,7 +15,6 @@ actor {
     timestamp: Int;
   };
 
-  // Define the updated Holding type
   type Holding = {
     id: Nat;
     ticker: Text;
@@ -27,13 +25,11 @@ actor {
     performanceType: Text;
   };
 
-  // Stable variables to persist data across upgrades
   stable var nextId: Nat = 0;
   stable var transactions: [Transaction] = [];
   stable var balance: Float = 0.0;
   stable var holdings: [Holding] = [];
 
-  // Add a new transaction
   public func addTransaction(amount: Float, description: Text) : async Nat {
     let id = nextId;
     nextId += 1;
@@ -51,7 +47,6 @@ actor {
     id
   };
 
-  // Add a new holding
   public func addHolding(ticker: Text, companyName: Text, quantity: Float, marketValue: Float, marketPrice: Float, performanceType: Text) : async Nat {
     let id = nextId;
     nextId += 1;
@@ -72,27 +67,21 @@ actor {
     id
   };
 
-  // Get the current balance
   public query func getBalance() : async Float {
     balance
   };
 
-  // Get all transactions
   public query func getTransactions() : async [Transaction] {
     transactions
   };
 
-  // Get all holdings
   public query func getHoldings() : async [Holding] {
     holdings
   };
 
-  // System functions for upgrades
   system func preupgrade() {
-    // Data is already in stable variables, no action needed
   };
 
   system func postupgrade() {
-    // Data is already in stable variables, no action needed
   };
 }

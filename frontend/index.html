@@ -34,11 +34,6 @@
             font-size: 1em;
             font-weight: 500;
         }
-        .chart {
-            width: 100%;
-            height: 180px;
-            margin: 20px 0;
-        }
         .holdings-list {
             list-style-type: none;
             padding: 0;
@@ -54,15 +49,6 @@
         .holdings-list .value {
             color: #34c759;
             font-weight: 500;
-        }
-        .pie-charts {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 24px;
-        }
-        .pie-chart {
-            width: 32%;
-            height: 140px;
         }
         .holdings-grid {
             display: grid;
@@ -181,26 +167,16 @@
     </div>
     <div class="dashboard">
         <div class="card">
-            <div class="total-value">462,487.742</div>
-            <div class="change">+6,186.64 (+1.35%)</div>
-            <canvas class="chart" id="valueChart"></canvas>
+            <div class="total-value">Loading...</div>
+            <div class="change">Loading...</div>
             <ul class="holdings-list">
-                <li><span>WBO IRA</span> <span class="value">$53,185.42</span></li>
-                <li><span>TD RRSP</span> <span class="value">CA$13,985.13</span></li>
-                <li><span>Bank of America Saving</span> <span class="value">$132,000.00</span></li>
-                <li><span>Robinhood Invest</span> <span class="value">$4,819.60</span></li>
-                <li><span>Coinbase Crypto</span> <span class="value">$58,346.81</span></li>
+                <li>Loading holdings...</li>
             </ul>
         </div>
         <div class="card">
             <div class="tab-header">
                 <h2>Holdings</h2>
                 <button class="add-asset-btn" id="addAssetBtn">+ Add Asset</button>
-            </div>
-            <div class="pie-charts">
-                <canvas class="pie-chart" id="allocationChart"></canvas>
-                <canvas class="pie-chart" id="classesChart"></canvas>
-                <canvas class="pie-chart" id="sectorsChart"></canvas>
             </div>
             <div class="holdings-grid" id="holdingsGrid"></div>
         </div>
@@ -222,7 +198,6 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script type="module" src="index.js"></script>
 </body>
 </html>
