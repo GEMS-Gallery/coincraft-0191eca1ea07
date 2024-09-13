@@ -1,0 +1,12 @@
+type Transaction = 
+ record {
+   amount: float64;
+   description: text;
+   id: nat;
+   timestamp: int;
+ };
+service : {
+  addTransaction: (float64, text) -> (nat);
+  getBalance: () -> (float64) query;
+  getTransactions: () -> (vec Transaction) query;
+}
