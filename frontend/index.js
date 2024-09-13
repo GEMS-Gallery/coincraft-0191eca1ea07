@@ -96,13 +96,40 @@ new Chart(document.getElementById('sectorsChart').getContext('2d'), {
     options: pieChartOptions
 });
 
-document.querySelector('.add-asset-btn').addEventListener('click', async () => {
-    const name = prompt("Enter asset name:");
-    const value = parseFloat(prompt("Enter asset value:"));
+// Modal functionality
+const modal = document.getElementById("addAssetModal");
+const btn = document.querySelector(".add-asset-btn");
+const span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+document.getElementById('addAssetForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('assetName').value;
+    const value = parseFloat(document.getElementById('assetValue').value);
     if (name && value) {
-        await backend.addHolding(name, value);
-        await updateBalance();
-        await updateHoldings();
+        try {
+            await backend.addHolding(name, value);
+            await updateBalance();
+            await updateHoldings();
+            modal.style.display = "none";
+            document.getElementById('addAssetForm').reset();
+        } catch (error) {
+            console.error("Error adding asset:", error);
+            alert("Failed to add asset. Please try again.");
+        }
     }
 });
 
