@@ -4,34 +4,46 @@ Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
 Chart.defaults.font.size = 12;
 
 async function updateBalance() {
-    const balance = await backend.getBalance();
-    document.querySelector('.total-value').textContent = balance.toFixed(3);
+    try {
+        const balance = await backend.getBalance();
+        document.querySelector('.total-value').textContent = balance.toFixed(3);
+    } catch (error) {
+        console.error("Error updating balance:", error);
+    }
 }
 
 async function updateTransactions() {
-    const transactions = await backend.getTransactions();
-    const holdingsList = document.querySelector('.holdings-list');
-    holdingsList.innerHTML = transactions.map(t => `
-        <li><span>${t.description}</span> <span class="value">$${t.amount.toFixed(2)}</span></li>
-    `).join('');
+    try {
+        const transactions = await backend.getTransactions();
+        const holdingsList = document.querySelector('.holdings-list');
+        holdingsList.innerHTML = transactions.map(t => `
+            <li><span>${t.description}</span> <span class="value">$${t.amount.toFixed(2)}</span></li>
+        `).join('');
+    } catch (error) {
+        console.error("Error updating transactions:", error);
+    }
 }
 
 async function updateHoldings() {
-    const holdings = await backend.getHoldings();
-    const holdingsGrid = document.getElementById('holdingsGrid');
-    holdingsGrid.innerHTML = '';
-    holdings.forEach(holding => {
-        const tile = document.createElement('div');
-        tile.className = 'holding-tile';
-        tile.innerHTML = `
-            <strong>${holding.ticker} - ${holding.companyName}</strong>
-            <p>Quantity: ${holding.quantity}</p>
-            <p>Market Value: $${holding.marketValue.toLocaleString()}</p>
-            <p>Market Price: $${holding.marketPrice.toLocaleString()}</p>
-            <p>Performance: ${holding.performanceType}</p>
-        `;
-        holdingsGrid.appendChild(tile);
-    });
+    try {
+        const holdings = await backend.getHoldings();
+        const holdingsGrid = document.getElementById('holdingsGrid');
+        holdingsGrid.innerHTML = '';
+        holdings.forEach(holding => {
+            const tile = document.createElement('div');
+            tile.className = 'holding-tile';
+            tile.innerHTML = `
+                <strong>${holding.ticker} - ${holding.companyName}</strong>
+                <p>Quantity: ${holding.quantity}</p>
+                <p>Market Value: $${holding.marketValue.toLocaleString()}</p>
+                <p>Market Price: $${holding.marketPrice.toLocaleString()}</p>
+                <p>Performance: ${holding.performanceType}</p>
+            `;
+            holdingsGrid.appendChild(tile);
+        });
+    } catch (error) {
+        console.error("Error updating holdings:", error);
+    }
 }
 
 function initializeCharts() {
@@ -107,6 +119,7 @@ function initializeModal() {
     if (btn) {
         btn.onclick = function(e) {
             e.preventDefault();
+            e.stopPropagation();
             console.log("Add Asset button clicked");
             modal.style.display = "block";
         }
@@ -158,4 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateBalance();
     updateTransactions();
     updateHoldings();
+});
+
+// Prevent any click events from bubbling up from the modal
+document.querySelector('.modal-content').addEventListener('click', (e) => {
+    e.stopPropagation();
 });
