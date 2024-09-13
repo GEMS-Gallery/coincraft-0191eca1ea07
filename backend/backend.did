@@ -7,12 +7,16 @@ type Transaction =
  };
 type Holding = 
  record {
+   companyName: text;
    id: nat;
-   name: text;
-   value: float64;
+   marketPrice: float64;
+   marketValue: float64;
+   performanceType: text;
+   quantity: float64;
+   ticker: text;
  };
 service : {
-  addHolding: (text, float64) -> (nat);
+  addHolding: (text, text, float64, float64, float64, text) -> (nat);
   addTransaction: (float64, text) -> (nat);
   getBalance: () -> (float64) query;
   getHoldings: () -> (vec Holding) query;

@@ -66,15 +66,14 @@
         }
         .holdings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 12px;
             margin-top: 24px;
         }
         .holding-tile {
             background-color: #f0fff1;
             border-radius: 8px;
-            padding: 12px 8px;
-            text-align: center;
+            padding: 12px;
             font-size: 0.85em;
         }
         .holding-tile strong {
@@ -212,8 +211,12 @@
             <span class="close">&times;</span>
             <h2>Add New Asset</h2>
             <form id="addAssetForm">
-                <input type="text" id="assetName" placeholder="Asset Name" required>
-                <input type="number" id="assetValue" placeholder="Asset Value" step="0.01" required>
+                <input type="text" id="assetTicker" placeholder="Stock Ticker" required>
+                <input type="text" id="assetCompanyName" placeholder="Company Name" required>
+                <input type="number" id="assetQuantity" placeholder="Quantity" step="0.01" required>
+                <input type="number" id="assetMarketValue" placeholder="Market Value" step="0.01" required>
+                <input type="number" id="assetMarketPrice" placeholder="Market Price" step="0.01" required>
+                <input type="text" id="assetPerformanceType" placeholder="Performance Type" required>
                 <button type="submit">Add Asset</button>
             </form>
         </div>

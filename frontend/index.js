@@ -25,7 +25,13 @@ async function updateHoldings() {
     holdings.forEach(holding => {
         const tile = document.createElement('div');
         tile.className = 'holding-tile';
-        tile.innerHTML = `<strong>${holding.name}</strong>$${holding.value.toLocaleString()}`;
+        tile.innerHTML = `
+            <strong>${holding.ticker} - ${holding.companyName}</strong>
+            <p>Quantity: ${holding.quantity}</p>
+            <p>Market Value: $${holding.marketValue.toLocaleString()}</p>
+            <p>Market Price: $${holding.marketPrice.toLocaleString()}</p>
+            <p>Performance: ${holding.performanceType}</p>
+        `;
         holdingsGrid.appendChild(tile);
     });
 }
@@ -124,11 +130,16 @@ function initializeModal() {
     if (form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('assetName').value;
-            const value = parseFloat(document.getElementById('assetValue').value);
-            if (name && value) {
+            const ticker = document.getElementById('assetTicker').value;
+            const companyName = document.getElementById('assetCompanyName').value;
+            const quantity = parseFloat(document.getElementById('assetQuantity').value);
+            const marketValue = parseFloat(document.getElementById('assetMarketValue').value);
+            const marketPrice = parseFloat(document.getElementById('assetMarketPrice').value);
+            const performanceType = document.getElementById('assetPerformanceType').value;
+
+            if (ticker && companyName && quantity && marketValue && marketPrice && performanceType) {
                 try {
-                    await backend.addHolding(name, value);
+                    await backend.addHolding(ticker, companyName, quantity, marketValue, marketPrice, performanceType);
                     await updateBalance();
                     await updateHoldings();
                     modal.style.display = "none";

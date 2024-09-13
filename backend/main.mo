@@ -16,11 +16,15 @@ actor {
     timestamp: Int;
   };
 
-  // Define the Holding type
+  // Define the updated Holding type
   type Holding = {
     id: Nat;
-    name: Text;
-    value: Float;
+    ticker: Text;
+    companyName: Text;
+    quantity: Float;
+    marketValue: Float;
+    marketPrice: Float;
+    performanceType: Text;
   };
 
   // Stable variables to persist data across upgrades
@@ -48,18 +52,22 @@ actor {
   };
 
   // Add a new holding
-  public func addHolding(name: Text, value: Float) : async Nat {
+  public func addHolding(ticker: Text, companyName: Text, quantity: Float, marketValue: Float, marketPrice: Float, performanceType: Text) : async Nat {
     let id = nextId;
     nextId += 1;
 
     let holding: Holding = {
       id;
-      name;
-      value;
+      ticker;
+      companyName;
+      quantity;
+      marketValue;
+      marketPrice;
+      performanceType;
     };
 
     holdings := Array.append(holdings, [holding]);
-    balance += value;
+    balance += marketValue;
 
     id
   };

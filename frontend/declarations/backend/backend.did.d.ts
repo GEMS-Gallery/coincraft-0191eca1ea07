@@ -2,7 +2,15 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
-export interface Holding { 'id' : bigint, 'value' : number, 'name' : string }
+export interface Holding {
+  'id' : bigint,
+  'performanceType' : string,
+  'ticker' : string,
+  'marketValue' : number,
+  'companyName' : string,
+  'quantity' : number,
+  'marketPrice' : number,
+}
 export interface Transaction {
   'id' : bigint,
   'description' : string,
@@ -10,7 +18,10 @@ export interface Transaction {
   'amount' : number,
 }
 export interface _SERVICE {
-  'addHolding' : ActorMethod<[string, number], bigint>,
+  'addHolding' : ActorMethod<
+    [string, string, number, number, number, string],
+    bigint
+  >,
   'addTransaction' : ActorMethod<[number, string], bigint>,
   'getBalance' : ActorMethod<[], number>,
   'getHoldings' : ActorMethod<[], Array<Holding>>,
