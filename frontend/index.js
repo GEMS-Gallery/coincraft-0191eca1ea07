@@ -18,6 +18,18 @@ async function updateTransactions() {
     `).join('');
 }
 
+async function updateHoldings() {
+    const holdings = await backend.getHoldings();
+    const holdingsGrid = document.getElementById('holdingsGrid');
+    holdingsGrid.innerHTML = '';
+    holdings.forEach(holding => {
+        const tile = document.createElement('div');
+        tile.className = 'holding-tile';
+        tile.innerHTML = `<strong>${holding.name}</strong>$${holding.value.toLocaleString()}`;
+        holdingsGrid.appendChild(tile);
+    });
+}
+
 // Value chart
 new Chart(document.getElementById('valueChart').getContext('2d'), {
     type: 'line',
@@ -84,35 +96,17 @@ new Chart(document.getElementById('sectorsChart').getContext('2d'), {
     options: pieChartOptions
 });
 
-// Holdings grid
-const holdings = [
-    { name: 'VTI', value: 150000 },
-    { name: 'VT', value: 100000 },
-    { name: 'AAPL', value: 75000 },
-    { name: 'MSFT', value: 50000 },
-    { name: 'BTC', value: 25000 },
-    { name: 'TSLA', value: 20000 },
-    { name: 'GOOGL', value: 15000 }
-];
-
-const holdingsGrid = document.getElementById('holdingsGrid');
-holdings.forEach(holding => {
-    const tile = document.createElement('div');
-    tile.className = 'holding-tile';
-    tile.innerHTML = `<strong>${holding.name}</strong>$${holding.value.toLocaleString()}`;
-    holdingsGrid.appendChild(tile);
-});
-
 document.querySelector('.add-asset-btn').addEventListener('click', async () => {
-    const amount = parseFloat(prompt("Enter asset value:"));
-    const description = prompt("Enter asset description:");
-    if (amount && description) {
-        await backend.addTransaction(amount, description);
+    const name = prompt("Enter asset name:");
+    const value = parseFloat(prompt("Enter asset value:"));
+    if (name && value) {
+        await backend.addHolding(name, value);
         await updateBalance();
-        await updateTransactions();
+        await updateHoldings();
     }
 });
 
 // Initial load
 updateBalance();
 updateTransactions();
+updateHoldings();

@@ -16,10 +16,18 @@ actor {
     timestamp: Int;
   };
 
+  // Define the Holding type
+  type Holding = {
+    id: Nat;
+    name: Text;
+    value: Float;
+  };
+
   // Stable variables to persist data across upgrades
   stable var nextId: Nat = 0;
   stable var transactions: [Transaction] = [];
   stable var balance: Float = 0.0;
+  stable var holdings: [Holding] = [];
 
   // Add a new transaction
   public func addTransaction(amount: Float, description: Text) : async Nat {
@@ -39,6 +47,23 @@ actor {
     id
   };
 
+  // Add a new holding
+  public func addHolding(name: Text, value: Float) : async Nat {
+    let id = nextId;
+    nextId += 1;
+
+    let holding: Holding = {
+      id;
+      name;
+      value;
+    };
+
+    holdings := Array.append(holdings, [holding]);
+    balance += value;
+
+    id
+  };
+
   // Get the current balance
   public query func getBalance() : async Float {
     balance
@@ -47,6 +72,11 @@ actor {
   // Get all transactions
   public query func getTransactions() : async [Transaction] {
     transactions
+  };
+
+  // Get all holdings
+  public query func getHoldings() : async [Holding] {
+    holdings
   };
 
   // System functions for upgrades

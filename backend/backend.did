@@ -5,8 +5,16 @@ type Transaction =
    id: nat;
    timestamp: int;
  };
+type Holding = 
+ record {
+   id: nat;
+   name: text;
+   value: float64;
+ };
 service : {
+  addHolding: (text, float64) -> (nat);
   addTransaction: (float64, text) -> (nat);
   getBalance: () -> (float64) query;
+  getHoldings: () -> (vec Holding) query;
   getTransactions: () -> (vec Transaction) query;
 }
